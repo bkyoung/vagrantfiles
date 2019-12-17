@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$init = <<SCRIPT
+#!/bin/bash
+
+export PATH=$PATH:/usr/local/bin
+echo "Executing common shell script that runs on all guests"
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  # Prep the boxes with common setup
+  config.vm.provision "shell", inline: $init
+
+  config.vm.define "web" do |web|
+    web.vm.box = "ubuntu/bionic64"
+    web.vm.provider "virtualbox" do |vb|
+        vb.gui = false
+        vb.memory = "2048"
+        vb.name = "web"
+    end
+    web.vm.provision :shell, inline: <<-SHELL
+    echo 'Web Server provisioning script here'
+    SHELL
+  end
+
+  config.vm.define "db" do |db|
+    db.vm.box = "ubuntu/bionic64"
+    db.vm.provider "virtualbox" do |vb|
+        vb.gui = false
+        vb.memory = "2048"
+        vb.name = "db"
+    end
+    db.vm.provision :shell, inline: <<-SHELL
+    echo 'Database Server provisioning script here'
+    SHELL
+  end
+end

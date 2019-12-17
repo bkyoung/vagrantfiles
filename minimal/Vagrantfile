@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$init = <<SCRIPT
+#!/bin/bash
+
+export PATH=$PATH:/usr/local/bin
+echo "You can write a shell script here to do interesting things"
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.box_check_update = true
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = false
+  
+    # Customize the amount of memory on the VM:
+    vb.memory = "2048"
+
+    # Set name in Virtualbox
+    vb.name = "vagrant"
+  end
+
+  # Prep the box to use our ssh keys
+  config.vm.provision "shell", inline: $init
+
+  # Informational message
+  config.vm.post_up_message = "To ssh into the VM, simply type 'vagrant ssh'"
+end
